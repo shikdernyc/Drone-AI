@@ -22,40 +22,37 @@ class GameProblem(SearchProblem):
         Returns a LIST of the actions that may be executed in this state
         '''
         actions = []
+        nesw = self.__get_nesw_tiles(state)
+        for (k,v) in nesw:
+            if # traversed or v = "sea" or v = None:
+                # omit tile
+            else:
+                # return k, v to actions
+
         return actions
 
-    def get_nesw_tiles(self, state):
+    def __get_nesw_tiles(self, state):
         '''
-        Get the available tiles/paths the drone is able to move to
+        Get the keys/values of tiles around the drone's current position
         '''
         x = state[0]
         y = state[1]
-        north = self.return_tile(x, y-1)
-        east = self.return_tile(x+1, y)
-        south = self.return_tile(x, y+1)
-        west = self.return_tile(x-1, y)
+        north = self.__return_tile(x, y-1)
+        east = self.__return_tile(x+1, y)
+        south = self.__return_tile(x, y+1)
+        west = self.__return_tile(x-1, y)
+        return {"North": north, "East": east, "South": south, "West": west}
 
-    def return_tile(self, x, y):
+    def __return_tile(self, x, y):
         '''
         Returns the tile position or null if at the edge of the map
         '''
         try:
-            north = self.MAP[x][y]
+            tile = self.MAP[x][y]
         except IndexError:
-            north = 'null'
-        try:
-            east = self.MAP[x][y]
-        except IndexError:
-            east = 'null'
-        try:
-            south = self.MAP[x][y]
-        except IndexError:
-            south = 'null'
-        try:
-            west = self.MAP[x][y]
-        except IndexError:
-            west = 'null'
-        return {"North" : north, "East" : east, "South" : south, "West" : west}
+            tile = None
+        return tile
+
 
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
