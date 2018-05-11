@@ -14,27 +14,25 @@ class GameProblem(SearchProblem):
     CONFIG = None
     AGENT_START = None
     # will contain all the maps tile we have visited
-    VISITED = set()
+    VISITED = []
 
     # --------------- Common functions to a SearchProblem -----------------
     def actions(self, state):
-        '''
-        Returns a LIST of the actions that may be executed in this state
-        '''
+        # Returns a LIST of the actions that may be executed in this state
+        # self.VISITED.append(self.__get_state_tile(state))
         actions = []
         nesw = self.__get_nesw_tiles(state)
         for key, value in nesw.items():
-            if value is None or value[0] is "sea": # traversed or v = "sea" or v = None:
-                continue # omit tile
+            if value is None or value[0] is "sea":
+                # TODO: Add a check for visited
+                continue
             else:
                 actions.append(key)
 
         return actions
 
     def __get_nesw_tiles(self, state):
-        '''
-        Get the keys/values of tiles around the drone's current position
-        '''
+        # Get the keys/values of tiles around the drone's current position
         x = state[0]
         y = state[1]
         north = self.__return_tile(x, y-1)
@@ -44,53 +42,32 @@ class GameProblem(SearchProblem):
         return {"North": north, "East": east, "South": south, "West": west}
 
     def __return_tile(self, x, y):
-        '''
-        Returns the tile position or null if at the edge of the map
-        '''
+        # Returns the tile position or null if at the edge of the map
         try:
             tile = self.MAP[x][y]
         except IndexError:
             tile = None
         return tile
 
+    def __get_state_tile(self, state):
+        return self.MAP[state[0]][state[1]]
+
     def result(self, state, action):
-        '''Returns the state reached from this state when the given action is executed
-        '''
-        # print 'state '
-        # print state
-        # print 'action '
-        # print action
-        if action == 'North':
-            if self.MAP[state[0]][state[1] - 1][0] == 'goal':
-                state_final = (state[0], state[1] - 1, state[2] - 1)
-            else:
-                state_final = (state[0], state[1] - 1, state[2])
-        elif action == 'South':
-            if self.MAP[state[0]][state[1] + 1][0] == 'goal':
-                state_final = (state[0], state[1] + 1, state[2] - 1)
-            else:
-                state_final = (state[0], state[1] + 1, state[2])
-        elif action == 'East':
-            if self.MAP[state[0] + 1][state[1]][0] == 'goal':
-                state_final = (state[0] + 1, state[1], state[2] - 1)
-            else:
-                state_final = (state[0] + 1, state[1], state[2])
-        else:
-            if self.MAP[state[0] - 1][state[1]][0] == 'goal':
-                state_final = (state[0] - 1, state[1], state[2] - 1)
-            else:
-                state_final = (state[0] - 1, state[1], state[2])
-        # print state_final
-        return state_final
+        # Returns the state reached from this state when the given action is executed
+        # Indicates how the x and y value changes for each type of action
+        action_for_state = {
+            "North": [0, -1],
+            "South": [0, 1],
+            "East": [1, 0],
+            "West": [-1, 0]
+        }
+        new_x = state[0] + action_for_state[action][0]
+        new_y = state[1] + action_for_state[action][1]
+        next_tile = self.__return_tile(new_x, new_y)
+        return (new_x, new_y, state[2] - 1) if next_tile[0] is 'goal' else (new_x, new_y, state[2])
 
     def is_goal(self, state):
-        '''Returns true if state is the final state
-        '''
-
-        if state == self.GOAL:
-            return True
-        else:
-            return False
+        return True if state == self.GOAL else False
 
     def cost(self, state, action, state2):
         '''Returns the cost of applying `action` from `state` to `state2`.
