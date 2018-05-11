@@ -23,11 +23,11 @@ class GameProblem(SearchProblem):
         '''
         actions = []
         nesw = self.__get_nesw_tiles(state)
-        for (k,v) in nesw:
-            if # traversed or v = "sea" or v = None:
-                # omit tile
+        for key, value in nesw.items():
+            if value is None or value[0] is "sea": # traversed or v = "sea" or v = None:
+                continue # omit tile
             else:
-                # return k, v to actions
+                actions.append(key)
 
         return actions
 
@@ -53,17 +53,44 @@ class GameProblem(SearchProblem):
             tile = None
         return tile
 
-
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
         '''
-        state_final = 0
+        # print 'state '
+        # print state
+        # print 'action '
+        # print action
+        if action == 'North':
+            if self.MAP[state[0]][state[1] - 1][0] == 'goal':
+                state_final = (state[0], state[1] - 1, state[2] - 1)
+            else:
+                state_final = (state[0], state[1] - 1, state[2])
+        elif action == 'South':
+            if self.MAP[state[0]][state[1] + 1][0] == 'goal':
+                state_final = (state[0], state[1] + 1, state[2] - 1)
+            else:
+                state_final = (state[0], state[1] + 1, state[2])
+        elif action == 'East':
+            if self.MAP[state[0] + 1][state[1]][0] == 'goal':
+                state_final = (state[0] + 1, state[1], state[2] - 1)
+            else:
+                state_final = (state[0] + 1, state[1], state[2])
+        else:
+            if self.MAP[state[0] - 1][state[1]][0] == 'goal':
+                state_final = (state[0] - 1, state[1], state[2] - 1)
+            else:
+                state_final = (state[0] - 1, state[1], state[2])
+        # print state_final
         return state_final
 
     def is_goal(self, state):
         '''Returns true if state is the final state
         '''
-        return True
+
+        if state == self.GOAL:
+            return True
+        else:
+            return False
 
     def cost(self, state, action, state2):
         '''Returns the cost of applying `action` from `state` to `state2`.
@@ -75,15 +102,21 @@ class GameProblem(SearchProblem):
     def heuristic(self, state):
         '''Returns the heuristic for `state`
         '''
+        # missing = len(self.GOAL) - len(state)
         return 0
 
     def setup(self):
-        print('\nMAP: ', self.MAP, '\n')
-        print('POSITIONS: ', self.POSITIONS, '\n')
-        print('CONFIG: ', self.CONFIG, '\n')
-        initial_state = 0
-        final_state = 0
+
+        print '\nMAP: ', self.MAP, '\n'
+        print 'POSITIONS: ', self.POSITIONS, '\n'
+        print 'CONFIG: ', self.CONFIG, '\n'
+
+        # initial_state = (self.AGENT_START[0], self.AGENT_START[1],len(self.POSITIONS['goal']), self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
+        # final_state= (self.AGENT_START[0], self.AGENT_START[1],0, self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
+        initial_state = (2, 1, 6)
+        final_state = (2, 1, 0)
         algorithm = simpleai.search.astar
+
         return initial_state, final_state, algorithm
 
     # -------------------------------------------------------------- #
@@ -107,16 +140,21 @@ class GameProblem(SearchProblem):
 
     # THIS INITIALIZATION FUNCTION HAS TO BE CALLED BEFORE THE SEARCH
     def initializeProblem(self, map, positions, conf, aiBaseName):
+
         # Loads the problem attributes: self.AGENT_START, self.POSITIONS,etc.
         if self.mapInitialization(map, positions, conf, aiBaseName):
+
             initial_state, final_state, algorithm = self.setup()
+
             self.INITIAL_STATE = initial_state
             self.GOAL = final_state
             self.ALGORITHM = algorithm
             super(GameProblem, self).__init__(self.INITIAL_STATE)
+
             return True
         else:
             return False
+
     # END initializeProblem
 
     def mapInitialization(self, map, positions, conf, aiBaseName):
@@ -133,12 +171,14 @@ class GameProblem(SearchProblem):
                 if len(self.POSITIONS[aiBaseName]) == 1:
                     self.AGENT_START = self.POSITIONS[aiBaseName][0]
                 else:
-                    # print(
-                        # '-- INITIALIZATION ERROR: There must be exactly one agent location with the label "{0}", found several at {1}'.format(
-                            # aiAgentName, mapaPosiciones[aiAgentName]))
+                    print (
+                        '-- INITIALIZATION ERROR: There must be exactly one agent location with the label "{0}", found several at {1}'.format(
+                            aiAgentName, mapaPosiciones[aiAgentName]))
                     return False
             else:
-                print('-- INITIALIZATION ERROR: There must be exactly one agent location with the label "{0}"'.format(
+                print ('-- INITIALIZATION ERROR: There must be exactly one agent location with the label "{0}"'.format(
                     aiBaseName))
                 return False
+
         return True
+
