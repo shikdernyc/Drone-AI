@@ -52,7 +52,8 @@ class GameProblem(SearchProblem):
            The returned value is a number (integer or floating point).
            By default this function returns `1`.
         '''
-        return 1
+        cost = self.__get_state_tile(state)[2]['cost'] + self.__get_state_tile(state2)[2]['cost']
+        return cost
 
     def heuristic(self, state):
         '''Returns the heuristic for `state`
