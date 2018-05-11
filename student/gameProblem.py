@@ -20,9 +20,12 @@ class GameProblem(SearchProblem):
     def actions(self, state):
         # Returns a LIST of the actions that may be executed in this state
         actions = []
+        current_tile = self.__get_state_tile(state)
+        if state != self.INITIAL_STATE:
+            self.VISITED.append(current_tile)
         nesw = self.__get_nesw_tiles(state)
         for key, value in nesw.items():
-            if value is None or value[0] is "sea":
+            if value is None or value[0] is "sea" or value in self.VISITED:
                 # TODO: Add a check for visited
                 continue
             else:
@@ -42,7 +45,7 @@ class GameProblem(SearchProblem):
         new_x = state[0] + action_for_state[action][0]
         new_y = state[1] + action_for_state[action][1]
         next_tile_type = self.__return_tile(new_x, new_y)[0]
-        return (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
+        nextState = (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
 
     def is_goal(self, state):
         return True if state == self.GOAL else False
@@ -69,7 +72,7 @@ class GameProblem(SearchProblem):
 
         # initial_state = (self.AGENT_START[0], self.AGENT_START[1],len(self.POSITIONS['goal']), self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
         # final_state= (self.AGENT_START[0], self.AGENT_START[1],0, self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
-        initial_state = (2, 1, 6)
+        initial_state = (2, 1, 4)
         final_state = (2, 1, 0)
         algorithm = simpleai.search.astar
 
