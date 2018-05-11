@@ -19,7 +19,6 @@ class GameProblem(SearchProblem):
     # --------------- Common functions to a SearchProblem -----------------
     def actions(self, state):
         # Returns a LIST of the actions that may be executed in this state
-        # self.VISITED.append(self.__get_state_tile(state))
         actions = []
         nesw = self.__get_nesw_tiles(state)
         for key, value in nesw.items():
@@ -28,37 +27,16 @@ class GameProblem(SearchProblem):
                 continue
             else:
                 actions.append(key)
-
         return actions
-
-    def __get_nesw_tiles(self, state):
-        # Get the keys/values of tiles around the drone's current position
-        x = state[0]
-        y = state[1]
-        north = self.__return_tile(x, y-1)
-        east = self.__return_tile(x+1, y)
-        south = self.__return_tile(x, y+1)
-        west = self.__return_tile(x-1, y)
-        return {"North": north, "East": east, "South": south, "West": west}
-
-    def __return_tile(self, x, y):
-        # Returns the tile position or null if at the edge of the map
-        try:
-            tile = self.MAP[x][y]
-        except IndexError:
-            tile = None
-        return tile
-
-    def __get_state_tile(self, state):
-        return self.MAP[state[0]][state[1]]
 
     def result(self, state, action):
         # Returns the state reached from this state when the given action is executed
         # Indicates how the x and y value changes for each type of action
         action_for_state = {
+            # NESW: [x, y]
             "North": [0, -1],
-            "South": [0, 1],
             "East": [1, 0],
+            "South": [0, 1],
             "West": [-1, 0]
         }
         new_x = state[0] + action_for_state[action][0]
@@ -96,6 +74,26 @@ class GameProblem(SearchProblem):
 
         return initial_state, final_state, algorithm
 
+    def __get_nesw_tiles(self, state):
+        # Get the keys/values of tiles around the drone's current position
+        x = state[0]
+        y = state[1]
+        north = self.__return_tile(x, y-1)
+        east = self.__return_tile(x+1, y)
+        south = self.__return_tile(x, y+1)
+        west = self.__return_tile(x-1, y)
+        return {"North": north, "East": east, "South": south, "West": west}
+
+    def __return_tile(self, x, y):
+        # Returns the tile position or null if at the edge of the map
+        try:
+            tile = self.MAP[x][y]
+        except IndexError:
+            tile = None
+        return tile
+
+    def __get_state_tile(self, state):
+        return self.MAP[state[0]][state[1]]
     # -------------------------------------------------------------- #
     # --------------- DO NOT EDIT BELOW THIS LINE  ----------------- #
     # -------------------------------------------------------------- #
