@@ -63,8 +63,8 @@ class GameProblem(SearchProblem):
         }
         new_x = state[0] + action_for_state[action][0]
         new_y = state[1] + action_for_state[action][1]
-        next_tile = self.__return_tile(new_x, new_y)
-        return (new_x, new_y, state[2] - 1) if next_tile[0] is 'goal' else (new_x, new_y, state[2])
+        next_tile_type = self.__return_tile(new_x, new_y)[0]
+        return (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
 
     def is_goal(self, state):
         return True if state == self.GOAL else False
