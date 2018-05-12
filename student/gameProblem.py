@@ -20,10 +20,11 @@ class GameProblem(SearchProblem):
 
     # --------------- Common functions to a SearchProblem -----------------
     def actions(self, state):
-        if state is not self.INITIAL_STATE:
+        '''if state is not self.INITIAL_STATE:
             current_tile = self.__get_state_tile(state)
             self.VISITED.append(current_tile)
             self.VISITED_STATES.append(state)
+        '''
         # Returns a LIST of the actions that may be executed in this state
         actions = []
         nesw = self.__get_nesw_tiles(state)
@@ -36,19 +37,69 @@ class GameProblem(SearchProblem):
         return actions
 
     def result(self, state, action):
-        # Returns the state reached from this state when the given action is executed
-        # Indicates how the x and y value changes for each type of action
-        action_for_state = {
-            # NESW: [x, y]
-            "North": [0, -1],
-            "East": [1, 0],
-            "South": [0, 1],
-            "West": [-1, 0]
-        }
-        new_x = state[0] + action_for_state[action][0]
-        new_y = state[1] + action_for_state[action][1]
-        next_tile_type = self.__return_tile(new_x, new_y)[0]
-        return (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
+        '''Returns the state reached from this state when the given action is executed
+        '''
+        #print 'state '
+        #print state
+        #print 'action '
+        #print action
+        if action == 'North':
+            if self.MAP[state[0]][state[1] - 1][0] == 'goal':
+                if (state[0], state[1]-1) in state[2]:
+                    state_final = (state[0], state[1]-1, state[2])
+                else:
+                    goal = (state[0], state[1]-1)
+                    new = state[2] + (goal,)
+                    state_final = (state[0], state[1]-1, new)
+            else:
+                state_final = (state[0], state[1]-1, state[2])
+        elif action == 'South':
+            if self.MAP[state[0]][state[1] + 1][0] == 'goal':
+                if (state[0], state[1]+1) in state[2]:
+                    state_final = (state[0], state[1]+1, state[2])
+                else:
+                    goal = (state[0], state[1]+1)
+                    new = state[2] + (goal,)
+                    state_final = (state[0], state[1]+1, new)
+            else:
+                state_final = (state[0], state[1]+1, state[2])
+        elif action == 'East':
+            if self.MAP[state[0]+1][state[1]][0] == 'goal':
+                if (state[0]+1, state[1]) in state[2]:
+                    state_final = (state[0]+1, state[1], state[2])
+                else:
+                    goal = (state[0]+1, state[1])
+                    new = state[2] + (goal,)
+                    state_final = (state[0]+1, state[1], new)
+            else:
+                state_final = (state[0]+1, state[1], state[2])
+        else:
+            if self.MAP[state[0] - 1][state[1]][0] == 'goal':
+                if (state[0]-1, state[1]) in state[2]:
+                    state_final = (state[0] - 1, state[1], state[2])
+                else:
+                    goal = (state[0]-1, state[1])
+                    new = state[2] + (goal,)
+                    state_final = (state[0] - 1, state[1], new)
+            else:
+                    state_final = (state[0] - 1, state[1], state[2])
+        # print state_final
+        return state_final
+
+    # def result(self, state, action):
+    #     # Returns the state reached from this state when the given action is executed
+    #     # Indicates how the x and y value changes for each type of action
+    #     action_for_state = {
+    #         # NESW: [x, y]
+    #         "North": [0, -1],
+    #         "East": [1, 0],
+    #         "South": [0, 1],
+    #         "West": [-1, 0]
+    #     }
+    #     new_x = state[0] + action_for_state[action][0]
+    #     new_y = state[1] + action_for_state[action][1]
+    #     next_tile_type = self.__return_tile(new_x, new_y)[0]
+    #     return (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
 
     def is_goal(self, state):
         return True if state == self.GOAL else False
@@ -67,16 +118,18 @@ class GameProblem(SearchProblem):
         return distance
 
     def setup(self):
-
-        print '\nMAP: ', self.MAP, '\n'
-        print 'POSITIONS: ', self.POSITIONS, '\n'
-        print 'CONFIG: ', self.CONFIG, '\n'
-
+        # print '\nMAP: ', self.MAP, '\n'
+        # print 'POSITIONS: ', self.POSITIONS, '\n'
+        # print 'CONFIG: ', self.CONFIG, '\n'
         # initial_state = (self.AGENT_START[0], self.AGENT_START[1],len(self.POSITIONS['goal']), self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
         # final_state= (self.AGENT_START[0], self.AGENT_START[1],0, self.MAP[self.AGENT_START[0]][self.AGENT_START[1]][0])
-        initial_state = (2, 1, 4)
-        final_state = (2, 1, 0)
-        algorithm = simpleai.search.astar
+        initial_state = (2, 1, ())
+        final_goals = tuple(self.POSITIONS['goal'])
+        final_state = (2, 1, final_goals)
+        algorithm = simpleai.search.breadth_first
+        # algorithm = simpleai.search.depth_first
+        # algorithm = simpleai.search.greedy
+        # algorithm = simpleai.search.astar
 
         return initial_state, final_state, algorithm
 
