@@ -15,14 +15,16 @@ class GameProblem(SearchProblem):
     AGENT_START = None
     # will contain all the maps tile we have visited
     VISITED = []
+    VISITED_STATES = []
 
     # --------------- Common functions to a SearchProblem -----------------
     def actions(self, state):
+        if state is not self.INITIAL_STATE:
+            current_tile = self.__get_state_tile(state)
+            self.VISITED.append(current_tile)
+            self.VISITED_STATES.append(state)
         # Returns a LIST of the actions that may be executed in this state
         actions = []
-        current_tile = self.__get_state_tile(state)
-        if state != self.INITIAL_STATE:
-            self.VISITED.append(current_tile)
         nesw = self.__get_nesw_tiles(state)
         for key, value in nesw.items():
             if value is None or value[0] is "sea" or value in self.VISITED:
@@ -45,7 +47,7 @@ class GameProblem(SearchProblem):
         new_x = state[0] + action_for_state[action][0]
         new_y = state[1] + action_for_state[action][1]
         next_tile_type = self.__return_tile(new_x, new_y)[0]
-        nextState = (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
+        return (new_x, new_y, state[2] - 1) if next_tile_type is 'goal' else (new_x, new_y, state[2])
 
     def is_goal(self, state):
         return True if state == self.GOAL else False
@@ -55,8 +57,7 @@ class GameProblem(SearchProblem):
            The returned value is a number (integer or floating point).
            By default this function returns `1`.
         '''
-        cost = self.__get_state_tile(state)[2]['cost'] + self.__get_state_tile(state2)[2]['cost']
-        return cost
+        return self.__get_state_tile(state)[2]['cost'] + self.__get_state_tile(state2)[2]['cost']
 
     def heuristic(self, state):
         '''Returns the heuristic for `state`
@@ -160,4 +161,3 @@ class GameProblem(SearchProblem):
                 return False
 
         return True
-
