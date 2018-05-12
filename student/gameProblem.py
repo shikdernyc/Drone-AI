@@ -3,6 +3,7 @@
 '''
 from simpleai.search import SearchProblem
 import simpleai.search
+import math
 
 
 class GameProblem(SearchProblem):
@@ -62,8 +63,8 @@ class GameProblem(SearchProblem):
     def heuristic(self, state):
         '''Returns the heuristic for `state`
         '''
-        # missing = len(self.GOAL) - len(state)
-        return 0
+        distance = math.sqrt((state[0]-self.GOAL[0])**2 + (state[1]-self.GOAL[1])**2)
+        return distance
 
     def setup(self):
 
@@ -91,6 +92,8 @@ class GameProblem(SearchProblem):
 
     def __return_tile(self, x, y):
         # Returns the tile position or null if at the edge of the map
+        if x < 0 or y < 0:
+            return None
         try:
             tile = self.MAP[x][y]
         except IndexError:
