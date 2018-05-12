@@ -19,11 +19,12 @@ class GameProblem(SearchProblem):
 
     # --------------- Common functions to a SearchProblem -----------------
     def actions(self, state):
-        if state is not self.INITIAL_STATE:
+        # Returns a LIST of the actions that may be executed in this state
+        if (state[0], state[1]) is not (self.INITIAL_STATE[0], self.INITIAL_STATE[1]) and (state[0], state[1]) not in self.VISITED_STATES:
             current_tile = self.__get_state_tile(state)
             self.VISITED.append(current_tile)
-            self.VISITED_STATES.append(state)
-        # Returns a LIST of the actions that may be executed in this state
+            self.VISITED_STATES.append((state[0], state[1]))
+            print(str(state))
         actions = []
         nesw = self.__get_nesw_tiles(state)
         for key, value in nesw.items():
@@ -90,6 +91,8 @@ class GameProblem(SearchProblem):
         return {"North": north, "East": east, "South": south, "West": west}
 
     def __return_tile(self, x, y):
+        if x < 0 or y < 0:
+            return None
         # Returns the tile position or null if at the edge of the map
         try:
             tile = self.MAP[x][y]
