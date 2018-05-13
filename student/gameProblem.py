@@ -57,7 +57,7 @@ class GameProblem(SearchProblem):
             battery = self.INITIAL_STATE[3]
         else:
             battery = state[3] - self.__get_state_tile(state)[2]['battery']
-        return new_x, new_y, pics, battery
+        return new_x, new_y, pics , battery
 
     def is_goal(self, state):
         """
@@ -75,7 +75,7 @@ class GameProblem(SearchProblem):
         :param state2: Next State
         :return:
         """
-        return self.__get_state_tile(state)[2]['cost'] + self.__get_state_tile(state2)[2]['cost']
+        return self.__get_state_tile(state2)[2]['cost'] # + self.__get_state_tile(state)[2]['cost']
 
     def heuristic(self, state):
         """
@@ -85,8 +85,15 @@ class GameProblem(SearchProblem):
         """
         delta_x = abs(self.GOAL[0] - state[0])
         delta_y = abs(self.GOAL[1] - state[0])
+        distance = math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
+        pic_cost = len(self.GOAL[2]) - len(state[2])
         battery = math.pow(self.INITIAL_STATE[3] - state[3], 2)
-        return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2)) + battery
+        # battery = 0 if distance <= state[3] else float('inf')
+        battery = 9999 if state[3] <= 0 else battery
+        # battery = state[3] / self.INITIAL_STATE[3]
+        # battery = battery / self.INITIAL_STATE[3]
+        # battery = 1 / (battery+0.01)
+        return distance + pic_cost + battery
 
     def setup(self):
         # print '\nMAP: ', self.MAP, '\n'
@@ -97,7 +104,7 @@ class GameProblem(SearchProblem):
         # final_state= (self.AGENT_START[0], self.AGENT_START[1],0, self.MAP[self.AGENT_START[0]]
         # [self.AGENT_START[1]][0])
         battery_max = 14
-        initial_state = (2, 1, (), battery_max)
+        initial_state = (2, 1, (),  battery_max)
         final_goals = tuple(self.POSITIONS['goal'])
         final_state = (2, 1, final_goals, battery_max)
         # algorithm = simpleai.search.breadth_first
