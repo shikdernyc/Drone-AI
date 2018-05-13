@@ -56,8 +56,8 @@ class GameProblem(SearchProblem):
         if next_tile_type == "drone-base" or next_tile_type == 'drone-base-traversed':
             battery = self.INITIAL_STATE[3]
         else:
-            battery = state[3] - self.__get_state_tile(state)[2]['battery']
-        return new_x, new_y, pics , battery
+            battery = state[3] - self.__return_tile(new_x, new_y)[2]['battery']
+        return new_x, new_y, pics, battery
 
     def is_goal(self, state):
         """
@@ -89,7 +89,7 @@ class GameProblem(SearchProblem):
         pic_cost = len(self.GOAL[2]) - len(state[2])
         battery = math.pow(self.INITIAL_STATE[3] - state[3], 2)
         # battery = 0 if distance <= state[3] else float('inf')
-        battery = 9999 if state[3] <= 0 else battery
+        battery = float('inf') if state[3] <= 0 else battery
         # battery = state[3] / self.INITIAL_STATE[3]
         # battery = battery / self.INITIAL_STATE[3]
         # battery = 1 / (battery+0.01)
@@ -104,8 +104,10 @@ class GameProblem(SearchProblem):
         # final_state= (self.AGENT_START[0], self.AGENT_START[1],0, self.MAP[self.AGENT_START[0]]
         # [self.AGENT_START[1]][0])
         battery_max = 14
+        initial_state = (2, 1, ())
         initial_state = (2, 1, (),  battery_max)
         final_goals = tuple(self.POSITIONS['goal'])
+        # final_state = (2, 1, final_goals)
         final_state = (2, 1, final_goals, battery_max)
         # algorithm = simpleai.search.breadth_first
         # algorithm = simpleai.search.depth_first

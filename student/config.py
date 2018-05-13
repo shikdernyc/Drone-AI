@@ -1,7 +1,7 @@
 configuration = {
 "text_size": 150,
 "tile_size": 60,
-"type": "load", #random
+"type": "load", #"random", # #
 "seed": None,
 "file": "./map.txt",
 "map_size": [10, 5],
@@ -117,7 +117,7 @@ configuration = {
         "img": "game/graphics/locations/droneBase100.png",
         "id":  "drone-base",
         "marker": 'B',
-        "num": 0,
+        "num": 2,
         "attributes":
              {"agent": None, "cost": 1, "battery": 0},
         },
@@ -125,7 +125,7 @@ configuration = {
         "img": "game/graphics/locations/droneBaseTraversed100.png",
         "id":  "drone-base-traversed",
         "marker": 'b',
-        "num": 0,
+        "num": 2,
         "attributes":
              {"agent": None, "cost": 1, "battery": 0},
         }
